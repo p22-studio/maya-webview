@@ -24,12 +24,12 @@ import {
 
 import {Webview} from './app/views/Webview';
 
-const AppNavigator = createNativeStackNavigator();
-
 export type RootAppParamList = {
   Home: undefined;
   Webview: {};
 };
+
+const AppNavigator = createNativeStackNavigator<RootAppParamList>();
 
 type HomeProps = NativeStackScreenProps<RootAppParamList, 'Home'>;
 
