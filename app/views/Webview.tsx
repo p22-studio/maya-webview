@@ -1,5 +1,12 @@
-import React, {useRef} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {
+  View,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
 import {WebViewMessageEvent, WebView} from 'react-native-webview';
 
 const sendMessage = (ref: any, type: string) => (payload: string) => {
@@ -15,20 +22,17 @@ const sendMessage = (ref: any, type: string) => (payload: string) => {
 };
 
 const Webview = () => {
+  const [text, setText] = useState('');
   const ref = useRef(null);
 
   const handleMessage = (event: WebViewMessageEvent) => {
-    const {data} = event.nativeEvent;
-
     console.log(event.nativeEvent.data);
-
-    // if (data === 'ready') {
-    //   sendMessage(ref, 'loadingVideoStarted')('');
-    // }
   };
 
+  const handleText = (newValue: string) => setText(newValue);
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <WebView
         allowsInlineMediaPlayback
         mediaPlaybackRequiresUserActions={false}
@@ -37,13 +41,49 @@ const Webview = () => {
         onError={e => console.log(e)}
         source={{uri: 'https://uneeq-webview.vercel.app/'}}
       />
-    </View>
+
+      <View style={styles.messageContainer}>
+        <TextInput
+          placeholder="Message"
+          style={styles.input}
+          onChangeText={handleText}
+          placeholderTextColor="#FFF"
+          value={text}
+        />
+        <TouchableOpacity
+          style={styles.speakButton}
+          onPress={() => {
+            sendMessage(ref, 'mayaMessage')(text);
+          }}>
+          <Text style={styles.text}>Send Message</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  messageContainer: {
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+  },
+  text: {
+    color: '#FFF',
+  },
+  speakButton: {
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#0C6291',
+  },
+  input: {
+    marginBottom: 5,
+    width: '100%',
+    backgroundColor: '#175676',
+    color: '#FFF',
+    padding: 10,
   },
 });
 
