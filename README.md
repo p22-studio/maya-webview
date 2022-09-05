@@ -11,7 +11,7 @@ This technical demo will explain how to implement the Digital Human in a React N
 1. Add the `<WebView />` component
 2. Add the following props
 
-```
+```tsx
 const sendMessage = (ref: any, type: string) => (payload: string) => {
   const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`;
   const script = `
@@ -25,7 +25,7 @@ const sendMessage = (ref: any, type: string) => (payload: string) => {
 };
 
 const DigitalHuman = () => {
-  const ref = useRef()
+  const ref = useRef();
 
   return (
     <WebView
@@ -34,14 +34,20 @@ const DigitalHuman = () => {
       ref={ref} // this will send messages to the webview
       onMessage={handleMessage} // this will receive messages from the webview
       source={{uri: 'https://uneeq-webview.vercel.app/'}}
-  />
-  )
-}
+    />
+  );
+};
 ```
 
 ## Receiving messages from the WebView
 
 This prop will allow us to get the messages sent from the WebView, which will update the UI based on its state.
+
+Types of **message**
+
+- `ready` the WebView is initialized
+- `sessionLive` the DigitalHuman is shown
+- It will also send messages with the actions of the WebView. This doesn't have to be handled, they just provide data about the state of the WebView
 
 ## Sending messages to the WebView
 
