@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, RefObject } from 'react'
 import {
   View,
   SafeAreaView,
@@ -11,22 +11,24 @@ import { WebViewMessageEvent, WebView } from 'react-native-webview'
 
 type MessageTypes = 'loadingVideoStarted' | 'mayaMessage'
 
-const sendMessage = (ref: any, type: MessageTypes) => (payload: string) => {
-  const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`
-  const script = `
+const sendMessage =
+  (ref: RefObject<WebView>, type: MessageTypes) => (payload: string) => {
+    const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`
+    const script = `
     window.ReactNativeWebView.mayaWebView.sendMessage({
       type: '${type}', payload: ${parsedPayload}
     })
     true
   `
 
-  ref.current?.injectJavaScript(script)
-}
+    ref.current?.injectJavaScript(script)
+  }
 
 const Webview = () => {
   const [text, setText] = useState('')
-  const ref = useRef(null)
+  const ref = useRef<WebView>(null)
 
+  // Receives the message from the WebView
   const handleMessage = (event: WebViewMessageEvent) => {
     console.log(event.nativeEvent.data)
 
@@ -48,7 +50,7 @@ const Webview = () => {
         domStorageEnabled
         allowFileAccessFromFileURLs
         allowUniversalAccessFromFileURLs
-        mediaPlaybackRequiresUserActions={false}
+        mediaPlaybackRequiresUserAction={false}
         ref={ref}
         onMessage={handleMessage}
         onError={e => console.log(e)}

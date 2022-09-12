@@ -12,25 +12,44 @@ This technical demo will explain how to implement the Digital Human in a React N
 2. Add the following props
 
 ```tsx
-const sendMessage = (ref: any, type: string) => (payload: string) => {
-  const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`
-  const script = `
+const sendMessage =
+  (ref: RefObject<WebView>, type: string) => (payload: string) => {
+    const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`
+    const script = `
     window.ReactNativeWebView.mayaWebView.sendMessage({
       type: '${type}', payload: ${parsedPayload}
     })
     true
   `
 
-  ref.current?.injectJavaScript(script)
-}
+    ref.current?.injectJavaScript(script)
+  }
 
 const DigitalHuman = () => {
-  const ref = useRef()
+  const ref = useRef(null)
+
+  const handleMessage = (event: WebViewMessageEvent) => {
+    console.log(event.nativeEvent.data)
+
+    // WebView initialized
+    if (event.native.data === 'ready') {
+      // Do stuff
+    }
+
+    // Digital Human is shown
+    if (event.native.data === 'sessionLive') {
+      // Do Stuff
+    }
+  }
 
   return (
     <WebView
       allowsInlineMediaPlayback
-      mediaPlaybackRequiresUserActions={false}
+      javaScriptEnabled
+      domStorageEnabled
+      allowFileAccessFromFileURLs
+      allowUniversalAccessFromFileURL
+      mediaPlaybackRequiresUserAction={false}
       ref={ref} // this will send messages to the webview
       onMessage={handleMessage} // this will receive messages from the webview
       source={{ uri: 'https://uneeq-webview.vercel.app/' }}
@@ -41,9 +60,9 @@ const DigitalHuman = () => {
 
 ## Receiving messages from the WebView
 
-This prop will allow us to get the messages sent from the WebView, which will update the UI based on its state.
+The `onMessage` prop will allow us to get the messages sent from the WebView, which will update the UI based on its state.
 
-Types of **message**
+Types of `message`
 
 - `ready` the WebView is initialized
 - `sessionLive` the DigitalHuman is shown
@@ -53,12 +72,12 @@ Types of **message**
 
 Using the function `sendMessage`, we will be able to send messages to the WebView.
 
-Types of **type**
+Types of `type`
 
 - `mayaMessage` allows will make the Digital Human to speak based on the `payload`
-- `loadingVideoStarted` shows the loading video while the Digital Human is initialized
+- `loadingVideoStarted` shows the loading video while the Digital Human is initialized. See `Webview.tsx` implementation for a guide on how to use this
 
-Types of **payload**
+Types of `payload`
 
 - Text that the Digital Human will speak
 
