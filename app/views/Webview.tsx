@@ -32,6 +32,7 @@ const Webview = () => {
 
     if (event.nativeEvent.data) {
       if (event.nativeEvent.data === 'ready') {
+        // Show the video when the WebView is rendered
         sendMessage(ref, 'loadingVideoStarted')('')
       }
     }

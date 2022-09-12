@@ -13,19 +13,19 @@ This technical demo will explain how to implement the Digital Human in a React N
 
 ```tsx
 const sendMessage = (ref: any, type: string) => (payload: string) => {
-  const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`;
+  const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`
   const script = `
     window.ReactNativeWebView.mayaWebView.sendMessage({
       type: '${type}', payload: ${parsedPayload}
     })
     true
-  `;
+  `
 
-  ref.current?.injectJavaScript(script);
-};
+  ref.current?.injectJavaScript(script)
+}
 
 const DigitalHuman = () => {
-  const ref = useRef();
+  const ref = useRef()
 
   return (
     <WebView
@@ -33,10 +33,10 @@ const DigitalHuman = () => {
       mediaPlaybackRequiresUserActions={false}
       ref={ref} // this will send messages to the webview
       onMessage={handleMessage} // this will receive messages from the webview
-      source={{uri: 'https://uneeq-webview.vercel.app/'}}
+      source={{ uri: 'https://uneeq-webview.vercel.app/' }}
     />
-  );
-};
+  )
+}
 ```
 
 ## Receiving messages from the WebView
@@ -56,7 +56,21 @@ Using the function `sendMessage`, we will be able to send messages to the WebVie
 Types of **type**
 
 - `mayaMessage` allows will make the Digital Human to speak based on the `payload`
+- `loadingVideoStarted` shows the loading video while the Digital Human is initialized
 
 Types of **payload**
 
 - Text that the Digital Human will speak
+
+## Considerations about the Digital Human
+
+### Every time the WebView is loaded, it will request camera and mic permissions - iOS only
+
+It's due to the fact that Uneeq SDK requires the usage of the Camera and Mic to initialize.
+
+**The Digital Human will not initialize if the user does not grant the permissions**
+
+### It does not work on a simulator - Android only
+
+The Android Simulator has some limitiations, one of them is rendering the Digital Human.
+It's something that is related to the Uneeq SDK. It will be fixed as soon as possible.
