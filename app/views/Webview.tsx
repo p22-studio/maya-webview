@@ -9,7 +9,9 @@ import {
 } from 'react-native';
 import {WebViewMessageEvent, WebView} from 'react-native-webview';
 
-const sendMessage = (ref: any, type: string) => (payload: string) => {
+type MessageTypes = 'loadingVideoStarted' | 'mayaMessage';
+
+const sendMessage = (ref: any, type: MessageTypes) => (payload: string) => {
   const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`;
   const script = `
     window.ReactNativeWebView.mayaWebView.sendMessage({
@@ -27,6 +29,12 @@ const Webview = () => {
 
   const handleMessage = (event: WebViewMessageEvent) => {
     console.log(event.nativeEvent.data);
+
+    if (event.nativeEvent.data) {
+      if (event.nativeEvent.data === 'ready') {
+        sendMessage(ref, 'loadingVideoStarted')('');
+      }
+    }
   };
 
   const handleText = (newValue: string) => setText(newValue);
@@ -35,11 +43,15 @@ const Webview = () => {
     <SafeAreaView style={styles.container}>
       <WebView
         allowsInlineMediaPlayback
+        javaScriptEnabled
+        domStorageEnabled
+        allowFileAccessFromFileURLs
+        allowUniversalAccessFromFileURLs
         mediaPlaybackRequiresUserActions={false}
         ref={ref}
         onMessage={handleMessage}
         onError={e => console.log(e)}
-        source={{uri: 'https://uneeq-webview.vercel.app/'}}
+        source={{uri: 'https://uneeq-webview.vercel.app'}}
       />
 
       <View style={styles.messageContainer}>
