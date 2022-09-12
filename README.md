@@ -4,7 +4,7 @@ This technical demo will explain how to implement the Digital Human in a React N
 
 ## Requisites
 
-- [WebView package](https://github.com/react-native-webview/react-native-webview) (try to keep updated to the latest version)
+- [WebView package](https://github.com/react-native-webview/react-native-webview) (try to keep it updated to the latest version)
 
 ## WebView Usage
 
@@ -66,7 +66,7 @@ Types of `message`
 
 - `ready` the WebView is initialized
 - `sessionLive` the DigitalHuman is shown
-- It will also send messages with the actions of the WebView. This doesn't have to be handled, they just provide data about the state of the WebView
+- It will also receive messages with the actions from the WebView. This doesn't have to be handled, they just provide data about the state of the WebView
 
 ## Sending messages to the WebView
 
