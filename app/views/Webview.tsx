@@ -1,43 +1,43 @@
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react'
 import {
   View,
   SafeAreaView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Text,
-} from 'react-native';
-import {WebViewMessageEvent, WebView} from 'react-native-webview';
+  Text
+} from 'react-native'
+import { WebViewMessageEvent, WebView } from 'react-native-webview'
 
-type MessageTypes = 'loadingVideoStarted' | 'mayaMessage';
+type MessageTypes = 'loadingVideoStarted' | 'mayaMessage'
 
 const sendMessage = (ref: any, type: MessageTypes) => (payload: string) => {
-  const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`;
+  const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`
   const script = `
     window.ReactNativeWebView.mayaWebView.sendMessage({
       type: '${type}', payload: ${parsedPayload}
     })
     true
-  `;
+  `
 
-  ref.current?.injectJavaScript(script);
-};
+  ref.current?.injectJavaScript(script)
+}
 
 const Webview = () => {
-  const [text, setText] = useState('');
-  const ref = useRef(null);
+  const [text, setText] = useState('')
+  const ref = useRef(null)
 
   const handleMessage = (event: WebViewMessageEvent) => {
-    console.log(event.nativeEvent.data);
+    console.log(event.nativeEvent.data)
 
     if (event.nativeEvent.data) {
       if (event.nativeEvent.data === 'ready') {
-        sendMessage(ref, 'loadingVideoStarted')('');
+        sendMessage(ref, 'loadingVideoStarted')('')
       }
     }
-  };
+  }
 
-  const handleText = (newValue: string) => setText(newValue);
+  const handleText = (newValue: string) => setText(newValue)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -51,7 +51,7 @@ const Webview = () => {
         ref={ref}
         onMessage={handleMessage}
         onError={e => console.log(e)}
-        source={{uri: 'https://uneeq-webview.vercel.app'}}
+        source={{ uri: 'https://uneeq-webview.vercel.app' }}
       />
 
       <View style={styles.messageContainer}>
@@ -65,38 +65,39 @@ const Webview = () => {
         <TouchableOpacity
           style={styles.speakButton}
           onPress={() => {
-            sendMessage(ref, 'mayaMessage')(text);
-          }}>
+            sendMessage(ref, 'mayaMessage')(text)
+          }}
+        >
           <Text style={styles.text}>Send Message</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   messageContainer: {
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFF'
   },
   text: {
-    color: '#FFF',
+    color: '#FFF'
   },
   speakButton: {
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#0C6291',
+    backgroundColor: '#0C6291'
   },
   input: {
     marginBottom: 5,
     width: '100%',
     backgroundColor: '#175676',
     color: '#FFF',
-    padding: 10,
-  },
-});
+    padding: 10
+  }
+})
 
-export {Webview};
+export { Webview }

@@ -8,35 +8,35 @@
  * @format
  */
 
-import React from 'react';
+import React from 'react'
 import {
   StatusBar,
   TouchableOpacity,
   StyleSheet,
   Text,
-  View,
-} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+  View
+} from 'react-native'
+import { NavigationContainer } from '@react-navigation/native'
 import {
   createNativeStackNavigator,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
+  NativeStackScreenProps
+} from '@react-navigation/native-stack'
 
-import {Webview} from './app/views/Webview';
+import { Webview } from './app/views/Webview'
 
 export type RootAppParamList = {
-  Home: undefined;
-  Webview: {};
-};
+  Home: undefined
+  Webview: {}
+}
 
-const AppNavigator = createNativeStackNavigator<RootAppParamList>();
+const AppNavigator = createNativeStackNavigator<RootAppParamList>()
 
-type HomeProps = NativeStackScreenProps<RootAppParamList, 'Home'>;
+type HomeProps = NativeStackScreenProps<RootAppParamList, 'Home'>
 
-const Home = ({navigation}: HomeProps) => {
+const Home = ({ navigation }: HomeProps) => {
   const handleNavigate = () => {
-    navigation.navigate('Webview', {});
-  };
+    navigation.navigate('Webview', {})
+  }
 
   return (
     <View>
@@ -44,8 +44,8 @@ const Home = ({navigation}: HomeProps) => {
         <Text style={styles.text}>Navigate to Maya Webview</Text>
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
 const App = () => {
   return (
@@ -56,21 +56,21 @@ const App = () => {
         <AppNavigator.Screen component={Webview} name="Webview" />
       </AppNavigator.Navigator>
     </NavigationContainer>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     backgroundColor: '#0C6291',
-    padding: 10,
+    padding: 10
   },
   home: {
-    flex: 1,
+    flex: 1
   },
   text: {
-    color: '#FFF',
-  },
-});
+    color: '#FFF'
+  }
+})
 
-export default App;
+export default App
