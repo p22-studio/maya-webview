@@ -65,7 +65,11 @@ const App = () => {
       <AppNavigator.Navigator initialRouteName="Home">
         <AppNavigator.Screen component={Home} name="Home" />
         <AppNavigator.Screen component={Webview} name="Webview" />
-        <AppNavigator.Screen component={OptimizedNavigator} name="Optimized" />
+        <AppNavigator.Screen
+          component={OptimizedNavigator}
+          options={{ headerShown: false }}
+          name="Optimized"
+        />
       </AppNavigator.Navigator>
     </NavigationContainer>
   )
