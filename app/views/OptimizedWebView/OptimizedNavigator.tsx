@@ -9,6 +9,7 @@ import { Video } from './Video'
 import { Welcome } from './Welcome'
 import { RootAppParamList } from '../../../App'
 import { OptimizedWebView } from './OptimizedWebView'
+import { Text } from './Text'
 
 type OptimizedWebViewProps = NativeStackScreenProps<
   RootAppParamList,
@@ -18,6 +19,7 @@ type OptimizedWebViewProps = NativeStackScreenProps<
 export type OptimizedNavigationParamList = {
   Welcome: undefined
   Video: {}
+  Text: {}
 }
 
 const OptimizedStack =
@@ -30,6 +32,7 @@ export const OptimizedNavigator = ({}: OptimizedWebViewProps) => {
       <OptimizedStack.Navigator initialRouteName="Welcome">
         <OptimizedStack.Screen component={Welcome} name="Welcome" />
         <OptimizedStack.Screen component={Video} name="Video" />
+        <OptimizedStack.Screen component={Text} name="Text" />
       </OptimizedStack.Navigator>
     </DigitalHumanProvider>
   )

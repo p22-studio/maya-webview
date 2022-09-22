@@ -1,27 +1,15 @@
-import React, { useMemo, useRef, RefObject } from 'react'
+import React, { useMemo } from 'react'
 import { Dimensions, StyleSheet } from 'react-native'
 import { WebViewMessageEvent, WebView } from 'react-native-webview'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
 import { useDigitalHuman } from './DigitalHumanContext'
 
-type MessageTypes = 'loadingVideoStarted' | 'mayaMessage'
-
-const sendMessage =
-  (ref: RefObject<WebView>, type: MessageTypes) => (payload: string) => {
-    const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`
-    const script = `
-    window.ReactNativeWebView.mayaWebView.sendMessage({
-      type: '${type}', payload: ${parsedPayload}
-    })
-    true
-  `
-
-    ref.current?.injectJavaScript(script)
-  }
+const TOP_BAR_HEIGHT = 44
 
 export const OptimizedWebView = React.memo(() => {
-  const ref = useRef<WebView>(null)
-
-  const { shown } = useDigitalHuman()
+  const { ref, shown, style, height, width } = useDigitalHuman()
+  const { top, bottom } = useSafeAreaInsets()
 
   const styles = useMemo(
     () =>
@@ -29,24 +17,29 @@ export const OptimizedWebView = React.memo(() => {
         container: {
           position: 'absolute',
           zIndex: shown ? 1 : 0,
-          height: Dimensions.get('screen').height,
-          width: Dimensions.get('screen').width,
-          opacity: shown ? 1 : 0
+          height:
+            (height || Dimensions.get('screen').height) -
+            top -
+            TOP_BAR_HEIGHT -
+            bottom,
+          width: width || Dimensions.get('screen').width,
+          opacity: shown ? 1 : 0,
+          ...style
         }
       }),
-    [shown]
+    [shown, top, bottom, width, height, style]
   )
 
   // Receives the message from the WebView
   const handleMessage = (event: WebViewMessageEvent) => {
     console.log(event.nativeEvent.data)
 
-    if (event.nativeEvent.data) {
-      if (event.nativeEvent.data === 'ready') {
-        // Show the video when the WebView is rendered
-        sendMessage(ref, 'loadingVideoStarted')('')
-      }
-    }
+    // if (event.nativeEvent.data) {
+    //   if (event.nativeEvent.data === 'ready') {
+    // Show the video when the WebView is rendered
+    //     sendMessage(ref, 'loadingVideoStarted')('')
+    //   }
+    // }
   }
 
   return (
