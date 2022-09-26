@@ -1,4 +1,4 @@
-import React, { useRef, useState, RefObject } from 'react'
+import React, { useRef, useEffect, useState, RefObject } from 'react'
 import {
   View,
   SafeAreaView,
@@ -8,6 +8,8 @@ import {
   Text
 } from 'react-native'
 import { WebViewMessageEvent, WebView } from 'react-native-webview'
+
+const TIMEOUT = 20000
 
 type MessageTypes = 'loadingVideoStarted' | 'mayaMessage'
 
@@ -26,11 +28,38 @@ const sendMessage =
 
 const Webview = () => {
   const [text, setText] = useState('')
+  const [uneeq, setUneeq] = useState({
+    initialized: new Date(),
+    sessionLive: false
+  })
   const ref = useRef<WebView>(null)
+
+  /**
+   * Validate timeout for session live
+   */
+  useEffect(() => {
+    let event: ReturnType<typeof setTimeout>
+
+    if (!uneeq.sessionLive) {
+      event = setTimeout(() => {
+        console.log('timeout')
+      }, TIMEOUT)
+    }
+
+    return () => clearTimeout(event)
+  }, [uneeq])
+
+  const validateSession = (data: string) => {
+    if (data === 'sessionLive') {
+      setUneeq(prevValue => ({ ...prevValue, sessionLive: true }))
+    }
+  }
 
   // Receives the message from the WebView
   const handleMessage = (event: WebViewMessageEvent) => {
     console.log(event.nativeEvent.data)
+
+    validateSession(event.nativeEvent.data)
 
     if (event.nativeEvent.data) {
       if (event.nativeEvent.data === 'ready') {
