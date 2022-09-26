@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useCallback,
-  RefObject
-} from 'react'
+import React, { useRef, useEffect, useState, RefObject } from 'react'
 import {
   View,
   SafeAreaView,
@@ -34,7 +28,6 @@ const sendMessage =
 
 const Webview = () => {
   const [text, setText] = useState('')
-  const [error, setError] = useState('')
   const [uneeq, setUneeq] = useState({
     initialized: new Date(),
     sessionLive: false
@@ -56,11 +49,11 @@ const Webview = () => {
     return () => clearTimeout(event)
   }, [uneeq])
 
-  const validateSession = useCallback((data: string) => {
+  const validateSession = (data: string) => {
     if (data === 'sessionLive') {
       setUneeq(prevValue => ({ ...prevValue, sessionLive: true }))
     }
-  }, [])
+  }
 
   // Receives the message from the WebView
   const handleMessage = (event: WebViewMessageEvent) => {
@@ -90,7 +83,7 @@ const Webview = () => {
         ref={ref}
         onMessage={handleMessage}
         onError={e => console.log(e)}
-        source={{ uri: 'http://localhost:8080' }}
+        source={{ uri: 'https://uneeq-webview.vercel.app' }}
       />
 
       <View style={styles.messageContainer}>

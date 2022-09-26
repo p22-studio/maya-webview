@@ -1,6 +1,6 @@
 # Maya Demo App
 
-This technical demo will explain how to implement the Digital Human in a React Native app
+This technical demo tries to explain how to implement the Digital Human in a React Native app
 
 ## Requisites
 
@@ -80,6 +80,67 @@ Types of `type`
 Types of `payload`
 
 - Text that the Digital Human will speak
+
+## Strategies
+
+All these strategies are placed in different components of the Demo App, to make use of them. Please refer to those components to have a more complete implementation idea.
+
+### Handling timeout when initializing
+
+When the message sent from the WebView has the value `sessionLive`, it indicates that the Digital Human was shown. But it might happen that there are some errors when rendering it, so setting a timer to handle that case might be benetifial to notify the user or reload the page.
+Here a state called `uneeq` is used to show the current status of the tool.
+
+```tsx
+const [uneeq, setUneeq] = useState({
+  initialized: new Date(),
+  sessionLive: false
+})
+```
+
+First call the `validateSession` function from `handleMessage`.
+
+```tsx
+const handleMessage = (event: WebViewMessageEvent) => {
+  validateSession(event.nativeEvent.data)
+
+  // do stuff
+}
+```
+
+```tsx
+const validateSession = (data: string) => {
+  if (data === 'sessionLive') {
+    setUneeq(prevValue => ({ ...prevValue, sessionLive: true }))
+  }
+}
+```
+
+And let's validate it with a timer
+
+```tsx
+useEffect(() => {
+  let event: ReturnType<typeof setTimeout>
+
+  if (!uneeq.sessionLive) {
+    event = setTimeout(() => {
+      console.log('timeout')
+    }, TIMEOUT)
+  }
+
+  return () => clearTimeout(event)
+}, [uneeq])
+```
+
+You could vary it if needed.
+
+## Optimized Experience
+
+The example shown in `app/views/OptimizedWebView` implements a workaround to pre render the WebView, and to reduce the initializing time.
+The implications are
+
+- Making use of React.Context to implement it. It could be replaced by a state management library of preference.
+- The position of the WebView will have to be `absolute`, so make sure to handle the way it's going to be rendered in every screen.
+- Make sure to initialize it when needed, not in every case.
 
 ## Considerations about the Digital Human
 
