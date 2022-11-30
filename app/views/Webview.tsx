@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   StyleSheet,
   TextInput,
+  AppState,
   TouchableOpacity,
   Text
 } from 'react-native'
@@ -11,11 +12,17 @@ import { WebViewMessageEvent, WebView } from 'react-native-webview'
 
 const TIMEOUT = 20000
 
-type MessageTypes = 'loadingVideoStarted' | 'mayaMessage'
+type MessageTypes =
+  | 'loadingVideoStarted'
+  | 'mayaMessage'
+  | 'pauseSession'
+  | 'resumeSession'
 
 const sendMessage =
-  (ref: RefObject<WebView>, type: MessageTypes) => (payload: string) => {
-    const parsedPayload = `{ type: 'question', question: '${payload || ''}' }`
+  (ref: RefObject<WebView>, type: MessageTypes) => (payload?: string) => {
+    const parsedPayload = payload
+      ? `{ type: 'question', question: '${payload || ''}' }`
+      : null
     const script = `
     window.ReactNativeWebView.mayaWebView.sendMessage({
       type: '${type}', payload: ${parsedPayload}
@@ -48,6 +55,19 @@ const Webview = () => {
 
     return () => clearTimeout(event)
   }, [uneeq])
+
+  // Manages WebView state when app sent to background
+  useEffect(() => {
+    AppState.addEventListener('change', state => {
+      if (state === 'inactive') {
+        sendMessage(ref, 'pauseSession')()
+      }
+
+      if (state === 'active') {
+        sendMessage(ref, 'resumeSession')()
+      }
+    })
+  }, [])
 
   const validateSession = (data: string) => {
     if (data === 'sessionLive') {
@@ -83,7 +103,9 @@ const Webview = () => {
         ref={ref}
         onMessage={handleMessage}
         onError={e => console.log(e)}
-        source={{ uri: 'https://uneeq-webview.vercel.app' }}
+        source={{
+          uri: 'https://uneeq-webview-git-init-config-p22.vercel.app/'
+        }}
       />
 
       <View style={styles.messageContainer}>
@@ -94,14 +116,40 @@ const Webview = () => {
           placeholderTextColor="#FFF"
           value={text}
         />
-        <TouchableOpacity
-          style={styles.speakButton}
-          onPress={() => {
-            sendMessage(ref, 'mayaMessage')(text)
-          }}
-        >
-          <Text style={styles.text}>Send Message</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonsSection}>
+          <TouchableOpacity
+            style={styles.webViewButton}
+            onPress={() => {
+              sendMessage(ref, 'mayaMessage')(text)
+            }}
+          >
+            <Text style={styles.text}>Send Message</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.webViewButton}
+            onPress={() => {
+              ref.current?.reload()
+            }}
+          >
+            <Text style={styles.text}>Retry</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.webViewButton}
+            onPress={() => {
+              sendMessage(ref, 'pauseSession')()
+            }}
+          >
+            <Text style={styles.text}>Pause</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.webViewButton}
+            onPress={() => {
+              sendMessage(ref, 'resumeSession')()
+            }}
+          >
+            <Text style={styles.text}>Resume</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -111,14 +159,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
+  buttonsSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 20
+  },
   messageContainer: {
-    alignItems: 'center',
     backgroundColor: '#FFF'
   },
   text: {
     color: '#FFF'
   },
-  speakButton: {
+  webViewButton: {
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#0C6291'

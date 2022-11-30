@@ -85,6 +85,26 @@ Types of `payload`
 
 All these strategies are placed in different components of the Demo App, to make use of them. Please refer to those components to have a more complete implementation idea.
 
+### Handling Digital Human state when sent to background
+
+When the app is sent to the background, the best practice is to pause the session and then resume when it is on the foreground. To do it, implement the code as follows
+
+```tsx
+useEffect(() => {
+  AppState.addEventListener('change', state => {
+    if (state === 'inactive') {
+      sendMessage(ref, 'pauseSession')()
+    }
+
+    if (state === 'active') {
+      sendMessage(ref, 'resumeSession')()
+    }
+  })
+}, [])
+```
+
+Note that you can use the message type `pauseSession` and `resumeSession` in other situations too.
+
 ### Handling timeout when initializing
 
 When the message sent from the WebView has the value `sessionLive`, it indicates that the Digital Human was shown. But it might happen that there are some errors when rendering it, so setting a timer to handle that case might be benetifial to notify the user or reload the page.
